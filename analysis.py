@@ -2,8 +2,11 @@ import numpy as np  # linear algebra
 import pandas as pd  # data processing, CSV file I/O (e.g. pd.read_csv)
 import seaborn as sns
 import streamlit as st
+import plotly.express as px
+import plotly.graph_objs as go
 from matplotlib import pyplot as plt
 
+st.set_option('deprecation.showPyplotGlobalUse', False)
 plt.rcParams['figure.figsize'] = [4, 4]
 st.title('Data Analysis project')
 
@@ -77,5 +80,76 @@ if distribution_graph:
  st.pyplot(fig)
 
      
+grading_count = st.checkbox('show grading count')
+
+if grading_count:
+     
+  
+ distr_graph_data = ["math score","reading score","writing score"]
+ add_selectbox = st.selectbox(
+    "Overall Score distribution",
+    (distr_graph_data)
+ )  
+ st.write(add_selectbox)
+ arr =  df_accident[add_selectbox]
+ def grading(arr):
+    if arr >= 70:
+        return "High"
+    elif arr<= 70 and arr >= 50:
+        return "Medium"
+    else:
+        return "Low"
+    
+
+ df_accident["grades"] = df_accident[add_selectbox].apply(grading)
+ grades_count=np.unique(df_accident["grades"],return_counts=True)
+
+ fig=plt.figure(figsize=(3, 3) )
+ 
+ fig, ax = plt.subplots()
+ ax.bar(grades_count[0],grades_count[1])
+
+ 
+ st.pyplot(fig)
+ 
+ st.subheader('Impact on Score')
+ col_1_data= ["gender","race/ethnicity","parental level of education","lunch","test preparation course"]
+ col_2_data= ["math score","reading score","writing score"]
+ col_1= st.selectbox(
+    "Select Column",
+    (col_1_data)
+ ) 
+ 
+ col_2 = st.selectbox(
+         "Select",
+         (col_2_data)
+)
+
+score=df_accident[col_2]
+def grade(score):
+    if score >= 70:
+        return "High"
+    elif score<= 70 and score>= 50:
+        return "Medium"
+    else:
+         return "Low"
+df_accident["grade"] = df_accident[col_2].apply(grade)
+# df_accident["grade_count"]= np.unique(df_accident["grade"], return_counts=True)
+# df_accident["col_2_count"]=np.unique(df_accident[col_1], return_counts=True)
+df_accident_grouped = df_accident["grade"].groupby([df_accident["grade"],df_accident[col_1]]).count().unstack()
+# df_accident_grouped
+# df_accident["grade_count"]
+# col_2
+
+df_accident_grouped
+df_accident_grouped.plot.bar()
+st.pyplot()
+
+
+ 
+
+
+
+
 
 
